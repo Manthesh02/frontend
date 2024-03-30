@@ -34,4 +34,5 @@ spec:
   ports:
   - name: http
     targetPort: 5173
-    port: 80
+    port: 8080
+    nodePort: 30000

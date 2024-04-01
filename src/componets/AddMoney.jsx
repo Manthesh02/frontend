@@ -24,7 +24,7 @@ const AddMoney = () => {
             alert("Razorpay SDK failed to load. Are you online?");
             return;
         }
-        const result = await axios.post('http://98.70.37.41:5003/payment/orders');
+        const result = await axios.post('http://localhost:5003/payment/orders');
   
         if (!result) {
             alert("Server error. Are you online?");
@@ -49,7 +49,7 @@ const AddMoney = () => {
                     razorpaySignature: response.razorpay_signature,
                 };
   
-                const result = await axios.post("http://98.70.37.41:5003/payment/success", data);
+                const result = await axios.post("http://localhost:5003/payment/success", data);
   
                 alert(result.data.msg);
             },

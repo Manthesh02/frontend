@@ -1,0 +1,38 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nodejs-app
+  namespace: default
+  labels:
+    app: nodejs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+      - name: nodejs-app
+        image: "manthesh/node-app-1.0"
+        ports:
+          - containerPort: 5173
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app
+  namespace: default
+spec:
+  selector:
+    app: nodejs-app
+  type: LoadBalancer
+  ports:
+  - name: http
+    targetPort: 5173
+    port: 8080
+

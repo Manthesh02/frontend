@@ -9,7 +9,7 @@ pipeline {
         stage("Clone code from GitHub") {
             steps {
                 script {
-                    git branch: 'develop', credentialsId: 'jenkins', url: 'https://github.com/Manthesh02/frontend.git'
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'd5a98037-9aae-4de5-a2a9-6e102c36aab7', url: 'git@github.com:Manthesh02/frontend.git']])
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
         stage('Deploy Docker Image to DockerHub') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'docker', variable: 'docker')]) {
+                    withCredentials([string(credentialsId: 'dockerhu', variable: 'dockerhub')]) {
                         sh 'docker login -u manthesh -p ${docker}'
                         sh 'docker push manthesh/node-app-1.0'
                     }
@@ -42,7 +42,7 @@ pipeline {
         stage('Deploying Node App to Kubernetes') {
             steps {
                 script {
-                    kubernetesDeploy configs: 'app.yaml', kubeconfigId: 'kube'
+                    kubernetesDeploy configs: 'app.yaml', kubeconfigId: 'Kubeconfig'
                 }
             }
         }

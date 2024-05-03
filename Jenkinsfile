@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     // Kubernetes CD plugin steps
-                    kubernetesDeploy configs: 'app.yaml', kubeConfig: [path: '/home/manthesh/.kube'], secretName: '', enableConfigSubstitution: false
+                    kubernetesDeploy configs: 'app.yaml', kubeConfig: [path: '/home/manthesh/.kube/config'], secretName: '', enableConfigSubstitution: false
                 }
             }
         }

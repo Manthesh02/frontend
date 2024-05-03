@@ -43,9 +43,9 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    withCredentials([string(credentialsId: 'kubeconfig', variable: 'kubeconfig')]) {
                         // Ensure that the 'app.yaml' file is present in your repository or Jenkins workspace
-                        sh 'kubectl --kubeconfig=$KUBECONFIG apply -f app.yaml'
+                        sh 'kubectl --kubeconfig=$kubeconfig apply -f app.yaml'
                     }
                 }
             }

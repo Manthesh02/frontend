@@ -1,19 +1,15 @@
 pipeline {
     agent any
-  
-    tools {
-        nodejs "node"
-    }
     
     stages {
-        stage("Clone code from GitHub") {
+        stage('Clone code from GitHub') {
             steps {
                 script {
                     checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'd5a98037-9aae-4de5-a2a9-6e102c36aab7', url: 'git@github.com:Manthesh02/frontend.git']])
                 }
             }
         }
-     
+        
         stage('Node JS Build') {
             steps {
                 sh 'npm install'
@@ -38,11 +34,12 @@ pipeline {
                 }
             }
         }
-         
-        stage('Deploying Node App to Kubernetes') {
+        
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    kubernetesDeploy configs: 'app.yaml', kubeconfigId: 'Kubeconfig'
+                    // Kubernetes CD plugin steps
+                    kubernetesDeploy configs: 'app.yaml', kubeConfig: [path: '/home/manthesh/.kube'], secretName: '', enableConfigSubstitution: false
                 }
             }
         }

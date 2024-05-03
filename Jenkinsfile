@@ -31,7 +31,7 @@ pipeline {
         stage('Deploy Docker Image to DockerHub') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'dockerhu', variable: 'dockerhub')]) {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
                         sh 'docker login -u manthesh -p ${docker}'
                         sh 'docker push manthesh/node-app-1.0'
                     }

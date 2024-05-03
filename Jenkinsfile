@@ -39,11 +39,14 @@ pipeline {
             }
         }
         
-        stage('Deploy to Kubernetes') {
+        // Added 'Deploy to Minikube' stage
+        stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Kubernetes CD plugin steps
-                    kubernetesDeploy configs: 'app.yaml', kubeConfig: [path: '/home/manthesh/.kube/config'], secretName: '', enableConfigSubstitution: false
+                    withCredentials([string(credentialsId: 'kubeconfig', variable: 'kubeconfig')]) {
+                        // Ensure that the 'app.yaml' file is present in your repository or Jenkins workspace
+                        sh 'kubectl --kubeconfig=$KUBECONFIG apply -f app.yaml'
+                    }
                 }
             }
         }

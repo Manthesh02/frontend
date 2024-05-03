@@ -9,7 +9,7 @@ pipeline {
         stage("Clone code from GitHub") {
             steps {
                 script {
-                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'd5a98037-9aae-4de5-a2a9-6e102c36aab7', url: 'git@github.com:Manthesh02/frontend.git']])
+                    checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'd5a98037-9aae-4de5-a2a9-6e102c36aab7', url: 'git@github.com:Manthesh02/frontend.git']])
                 }
             }
         }

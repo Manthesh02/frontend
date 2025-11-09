@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: mantheshfrontend 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mantheshfrontend
+  template:
+    metadata:
+      labels:
+        app: mantheshfrontend 
+    spec:
+      containers:
+        - name: mantheshfrontend 
+          image: popopo.azurecr.io/mantheshfrontend
+          ports:
+          - containerPort: 3000

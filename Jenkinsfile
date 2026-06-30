@@ -45,7 +45,7 @@ pipeline {
         stage('Deploy to K3s') {
             steps {
                 script {
-                    sh 'kubectl --kubeconfig=/home/mant/install/k3s.yaml apply -f app.yaml -n dvlp'
+                    sh 'sudo /usr/local/bin/k3s kubectl --kubeconfig=/home/mant/install/k3s.yaml apply -f app.yaml -n dvlp'
                 }
             }
         }

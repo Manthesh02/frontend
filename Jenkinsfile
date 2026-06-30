@@ -1,10 +1,10 @@
 pipeline {
     agent any
-    
+
     tools {
         nodejs "node"
     }
-    
+
     stages {
         stage('Clone code from GitHub') {
             steps {
@@ -13,13 +13,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Node JS Build') {
             steps {
                 sh 'npm install'
             }
         }
-  
+
         stage('Build Node JS Docker Image') {
             steps {
                 script {
@@ -31,23 +31,21 @@ pipeline {
         stage('Deploy Docker Image to DockerHub') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-                        sh 'docker login -u manthesh -p ${dockerhub}'
-                        sh 'docker push manthesh/node-app-1.0'
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKER_TOKEN')]) {
+                        sh '''
+                            echo "$DOCKER_TOKEN" | docker login -u manthesh --password-stdin
+                            docker push manthesh/node-app-1.0
+                            docker logout
+                        '''
                     }
                 }
             }
         }
-        
-        // Added 'Deploy to Minikube' stage
-        stage('Deploy to Minikube') {
+
+        stage('Deploy to K3s') {
             steps {
                 script {
-                    // Load kubeconfig as a file credential
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'kubeconfig')]) {
-                        // Ensure that the 'app.yaml' file is present in your repository or Jenkins workspace 
-                        sh 'kubectl --kubeconfig=$kubeconfig apply -f app.yaml'
-                    }
+                    sh 'kubectl --kubeconfig=/home/mant/install/k3s.yaml apply -f app.yaml -n dvlp'
                 }
             }
         }

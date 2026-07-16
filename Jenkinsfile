@@ -7,11 +7,12 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'SonarScanner'
+        IMAGE_NAME = "manthesh/node-app-1.0"
     }
 
     stages {
 
-        stage('Clone code from GitHub') {
+        stage('Clone Code from GitHub') {
             steps {
                 checkout scmGit(
                     branches: [[name: '*/develop']],
@@ -24,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Node JS Build') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
@@ -52,19 +53,30 @@ pipeline {
             }
         }
 
-        stage('Build Node JS Docker Image') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t manthesh/node-app-1.0 .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
-        stage('Deploy Docker Image to DockerHub') {
+        stage('Trivy Image Scan') {
+            steps {
+                sh """
+                trivy image \
+                  --severity HIGH,CRITICAL \
+                  --exit-code 1 \
+                  ${IMAGE_NAME}
+                """
+            }
+        }
+
+        stage('Push Docker Image') {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub', variable: 'DOCKER_TOKEN')]) {
                     sh '''
-                        echo "$DOCKER_TOKEN" | docker login -u manthesh --password-stdin
-                        docker push manthesh/node-app-1.0
-                        docker logout
+                    echo "$DOCKER_TOKEN" | docker login -u manthesh --password-stdin
+                    docker push ${IMAGE_NAME}
+                    docker logout
                     '''
                 }
             }
@@ -72,8 +84,22 @@ pipeline {
 
         stage('Deploy to K3s') {
             steps {
-                sh 'sudo /usr/local/bin/k3s kubectl --kubeconfig=/home/mant/install/k3s.yaml apply -f app.yaml -n dvlp'
+                sh '''
+                sudo /usr/local/bin/k3s kubectl \
+                --kubeconfig=/home/mant/install/k3s.yaml \
+                apply -f app.yaml -n dvlp
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully."
+        }
+
+        failure {
+            echo "Pipeline failed. Check SonarQube or Trivy scan results."
         }
     }
 }
